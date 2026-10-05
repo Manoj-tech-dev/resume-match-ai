@@ -1,0 +1,51 @@
+%PDF-1.4
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [4 0 R] /Count 1 >>
+endobj
+3 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+4 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 5 0 R >>
+endobj
+5 0 obj
+<< /Length 852 >>
+stream
+BT
+/F1 11 Tf
+14 TL
+50 750 Td
+(Jane Doe - Software Engineer) Tj T*
+(jane@example.com | github.com/janedoe) Tj T*
+(SUMMARY) Tj T*
+(Backend engineer with 5 years of experience building Python services.) Tj T*
+(EXPERIENCE) Tj T*
+(Acme Corp, Senior Software Engineer, 2020 - Present) Tj T*
+(Worked on REST APIs with FastAPI and PostgreSQL for the billing platform team) Tj T*
+(Built Docker based CI/CD pipelines with GitHub Actions for twelve microservices) Tj T*
+(Mentored junior engineers and led code reviews across the backend team) Tj T*
+(Beta Inc, Software Engineer, 2018 - 2020) Tj T*
+(Developed React dashboards in TypeScript for internal analytics users) Tj T*
+(PROJECTS) Tj T*
+(Resume Parser - Python, Pandas, scikit-learn text classification tool) Tj T*
+(EDUCATION) Tj T*
+(Bachelor of Science in Computer Science, State University, 2018) Tj T*
+ET
+endstream
+endobj
+xref
+0 6
+0000000000 65535 f 
+0000000009 00000 n 
+0000000058 00000 n 
+0000000115 00000 n 
+0000000185 00000 n 
+0000000311 00000 n 
+trailer
+<< /Size 6 /Root 1 0 R >>
+startxref
+1214
+%%EOF
