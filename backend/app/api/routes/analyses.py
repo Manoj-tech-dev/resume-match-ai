@@ -38,12 +38,12 @@ def _read_limited(upload: UploadFile, max_bytes: int) -> bytes:
     response_model=AnalysisRecord,
     status_code=status.HTTP_201_CREATED,
     responses=_ERRORS,
-    summary="Analyze a PDF resume against a job description",
+    summary="Analyze a resume (PDF, Word, PowerPoint, Image, or Text) against a job description",
 )
 def analyze(
     service: AnalysisServiceDep,
     settings: SettingsDep,
-    resume: Annotated[UploadFile, File(description="Resume in PDF format")],
+    resume: Annotated[UploadFile, File(description="Resume file (PDF, DOCX, PPTX, Image, or TXT)")],
     job_description: Annotated[str, Form(description="Full job description text")] = "",
 ) -> AnalysisRecord:
     # Defined as a sync endpoint on purpose: PDF parsing and the LLM call are

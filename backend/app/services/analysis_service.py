@@ -10,7 +10,11 @@ from app.core.exceptions import NotFoundError, ValidationFailedError
 from app.db.models import Analysis
 from app.db.repository import AnalysisRepository
 from app.llm.base import LLMProvider
-from app.services.pdf_extractor import extract_text_from_pdf, sanitize_filename, validate_pdf_upload
+from app.services.pdf_extractor import (
+    extract_text_from_document,
+    sanitize_filename,
+    validate_document_upload,
+)
 
 logger = logging.getLogger("app.analysis")
 
@@ -39,8 +43,8 @@ class AnalysisService:
         self, *, filename: str | None, content_type: str | None, data: bytes, job_description: str | None
     ) -> Analysis:
         jd = self.validate_job_description(job_description)
-        validate_pdf_upload(filename, content_type, data, self._settings.max_upload_size_bytes)
-        resume = extract_text_from_pdf(data, max_pages=self._settings.max_resume_pages)
+        validate_document_upload(filename, content_type, data, self._settings.max_upload_size_bytes)
+        resume = extract_text_from_document(filename, data, max_pages=self._settings.max_resume_pages)
 
         started = time.perf_counter()
         result = self._provider.analyze(resume.text, jd)

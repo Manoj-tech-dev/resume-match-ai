@@ -10,6 +10,13 @@ interface FileDropzoneProps {
   maxSizeMb: number;
 }
 
+const ACCEPTED_TYPES =
+  '.pdf,.docx,.doc,.pptx,.ppt,.png,.jpg,.jpeg,.webp,.bmp,.tiff,.txt,.md,' +
+  'application/pdf,' +
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document,' +
+  'application/vnd.openxmlformats-officedocument.presentationml.presentation,' +
+  'image/*,text/plain';
+
 export function FileDropzone({ file, onFileChange, error, disabled = false, maxSizeMb }: FileDropzoneProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [dragging, setDragging] = useState(false);
@@ -41,14 +48,14 @@ export function FileDropzone({ file, onFileChange, error, disabled = false, maxS
   return (
     <div className="field">
       <label className="field__label" htmlFor={inputId}>
-        Resume <span className="field__hint">PDF · max {maxSizeMb} MB</span>
+        Resume / Document <span className="field__hint">PDF, DOCX, PPTX, Images, TXT · max {maxSizeMb} MB</span>
       </label>
 
       <input
         ref={inputRef}
         id={inputId}
         type="file"
-        accept="application/pdf,.pdf"
+        accept={ACCEPTED_TYPES}
         className="sr-only"
         disabled={disabled}
         aria-invalid={Boolean(error)}
@@ -86,7 +93,7 @@ export function FileDropzone({ file, onFileChange, error, disabled = false, maxS
           role="button"
           tabIndex={disabled ? -1 : 0}
           aria-disabled={disabled}
-          aria-label="Upload resume PDF: drag and drop or press to browse"
+          aria-label="Upload resume: drag and drop or press to browse PDF, Word, PowerPoint, image, or text file"
           className={`dropzone ${dragging ? 'dropzone--active' : ''} ${error ? 'dropzone--error' : ''}`}
           onClick={openPicker}
           onKeyDown={handleKey}
@@ -101,9 +108,9 @@ export function FileDropzone({ file, onFileChange, error, disabled = false, maxS
             <Icon name="upload" size={26} />
           </div>
           <p className="dropzone__title">
-            <strong>Drop your resume here</strong> or <span className="gradient-text">browse</span>
+            <strong>Drop your resume or slides here</strong> or <span className="gradient-text">browse</span>
           </p>
-          <p className="field__hint">Text-based PDFs work best (not scanned images)</p>
+          <p className="field__hint">Supports PDF, Word (.docx), PowerPoint (.pptx), images, and text</p>
         </div>
       )}
 

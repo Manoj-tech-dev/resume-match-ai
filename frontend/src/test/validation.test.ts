@@ -16,9 +16,38 @@ describe('validateResumeFile', () => {
     expect(validateResumeFile(file)).toBeNull();
   });
 
-  it('rejects non-pdf extension', () => {
-    const file = new File(['content'], 'resume.docx', { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
-    expect(validateResumeFile(file)).toMatch(/only pdf files/i);
+  it('accepts Word (.docx)', () => {
+    const file = new File(['PK docx binary'], 'resume.docx', {
+      type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    });
+    expect(validateResumeFile(file)).toBeNull();
+  });
+
+  it('accepts PowerPoint (.pptx)', () => {
+    const file = new File(['PK pptx binary'], 'resume.pptx', {
+      type: 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+    });
+    expect(validateResumeFile(file)).toBeNull();
+  });
+
+  it('accepts Images (.png, .jpg)', () => {
+    const png = new File(['PNG binary'], 'resume.png', { type: 'image/png' });
+    const jpg = new File(['JPG binary'], 'resume.jpg', { type: 'image/jpeg' });
+    expect(validateResumeFile(png)).toBeNull();
+    expect(validateResumeFile(jpg)).toBeNull();
+  });
+
+  it('accepts Text (.txt, .md)', () => {
+    const txt = new File(['plain text resume'], 'resume.txt', { type: 'text/plain' });
+    expect(validateResumeFile(txt)).toBeNull();
+  });
+
+  it('rejects unsupported extensions', () => {
+    const exe = new File(['binary'], 'resume.exe', { type: 'application/x-msdownload' });
+    expect(validateResumeFile(exe)).toMatch(/unsupported file format/i);
+
+    const zip = new File(['binary'], 'resume.zip', { type: 'application/zip' });
+    expect(validateResumeFile(zip)).toMatch(/unsupported file format/i);
   });
 
   it('rejects empty file', () => {

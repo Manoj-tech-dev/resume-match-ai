@@ -6,7 +6,7 @@ import { AnalyzeForm } from '../components/analyze/AnalyzeForm';
 describe('AnalyzeForm component', () => {
   it('renders dropzone, job description input, and submit button', () => {
     render(<AnalyzeForm onSubmit={vi.fn()} submitting={false} maxSizeMb={5} />);
-    expect(screen.getByText(/drop your resume here/i)).toBeInTheDocument();
+    expect(screen.getByText(/drop your resume/i)).toBeInTheDocument();
     expect(screen.getByPlaceholderText(/paste the full job posting here/i)).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /analyze resume/i })).toBeInTheDocument();
   });
@@ -18,7 +18,7 @@ describe('AnalyzeForm component', () => {
     const submitBtn = screen.getByRole('button', { name: /analyze resume/i });
     fireEvent.click(submitBtn);
 
-    expect(await screen.findByText(/upload your resume as a pdf/i)).toBeInTheDocument();
+    expect(await screen.findByText(/upload your resume/i)).toBeInTheDocument();
     expect(await screen.findByText(/please paste the job description/i)).toBeInTheDocument();
     expect(handleSubmit).not.toHaveBeenCalled();
   });

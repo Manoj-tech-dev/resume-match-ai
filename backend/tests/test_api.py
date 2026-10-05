@@ -49,7 +49,7 @@ class TestAnalyzeValidation:
         assert "too short" in res.json()["error"]["message"]
 
     def test_wrong_file_type(self, client: TestClient, job_description: str) -> None:
-        res = _post(client, b"hello world", job_description, filename="resume.txt", ctype="text/plain")
+        res = _post(client, b"MZ\x90\x00" + b"0" * 50, job_description, filename="resume.exe", ctype="application/x-msdownload")
         assert res.status_code == 415
         assert res.json()["error"]["code"] == "invalid_file_type"
 
@@ -121,3 +121,28 @@ class TestAnalysisLifecycle:
         assert client.get("/api/analyses?limit=0").status_code == 422
         assert client.get("/api/analyses?limit=101").status_code == 422
         assert client.get("/api/analyses?offset=-1").status_code == 422
+
+    def test_docx_upload_success(self, client: TestClient, job_description: str) -> None:
+        import io, docx
+        doc = docx.Document()
+        doc.add_heading("Jane Doe - Senior Engineer", 0)
+        doc.add_paragraph("Experienced software engineer with 5 years building Python, FastAPI, and PostgreSQL microservices.")
+        buf = io.BytesIO()
+        doc.save(buf)
+        res = _post(
+            client,
+            buf.getvalue(),
+            job_description,
+            filename="resume.docx",
+            ctype="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        )
+        assert res.status_code == 201
+        assert res.json()["resume_filename"] == "resume.docx"
+        assert res.json()["result"]["overall_score"] > 0
+
+    def test_txt_upload_success(self, client: TestClient, job_description: str) -> None:
+        text = "Jane Doe\nExperienced software engineer with 5 years building Python, FastAPI, and PostgreSQL microservices.\nDocker, Git, CI/CD, Linux."
+        res = _post(client, text.encode("utf-8"), job_description, filename="resume.txt", ctype="text/plain")
+        assert res.status_code == 201
+        assert res.json()["resume_filename"] == "resume.txt"
+        assert res.json()["result"]["overall_score"] > 0

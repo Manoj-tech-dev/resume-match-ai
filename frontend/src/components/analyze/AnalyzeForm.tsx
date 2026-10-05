@@ -44,7 +44,7 @@ export function AnalyzeForm({ onSubmit, submitting, maxSizeMb }: AnalyzeFormProp
             <Icon name="lightbulb" size={16} /> For the best results
           </p>
           <ul>
-            <li>Use a text-based PDF exported from Word, Google Docs or LaTeX.</li>
+            <li>Upload resumes in PDF, Word (.docx), PowerPoint (.pptx), image, or text format.</li>
             <li>Paste the complete job posting, including requirements.</li>
             <li>Your resume text is analyzed but never stored — only the results are saved.</li>
           </ul>

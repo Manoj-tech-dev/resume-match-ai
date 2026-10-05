@@ -49,7 +49,7 @@ export function AnalyzePage() {
           Supercharge your <span className="gradient-text">ATS Resume Score</span>
         </h1>
         <p className="muted" style={{ fontSize: 'var(--fs-lg)' }}>
-          Upload your resume and paste a job description. Our AI evaluates ATS compatibility, identifies missing skills, rewrites bullet points, and prepares interview questions.
+          Upload your resume in PDF, Word (.docx), PowerPoint (.pptx), image, or text format and paste a job description. Our AI evaluates ATS compatibility, identifies missing skills, rewrites bullet points, and prepares interview questions.
         </p>
       </section>
 

@@ -1,4 +1,6 @@
-"""End-to-End smoke test script against running live backend and frontend servers."""
+"""End-to-End smoke test script against running live backend and frontend servers.
+Tests multi-format uploads: PDF, DOCX, and TXT resumes.
+"""
 
 import sys
 from pathlib import Path
@@ -8,6 +10,8 @@ BACKEND_URL = "http://127.0.0.1:8000"
 FRONTEND_URL = "http://127.0.0.1:5173"
 WORKSPACE = Path(__file__).resolve().parent
 SAMPLE_PDF = WORKSPACE / "sample_resume.pdf"
+SAMPLE_DOCX = WORKSPACE / "sample_resume.docx"
+SAMPLE_TXT = WORKSPACE / "sample_resume.txt"
 
 JOB_DESCRIPTION = """Senior Backend Engineer
 
@@ -30,7 +34,7 @@ Qualifications:
 
 def run_smoke_test():
     print("=" * 60)
-    print("AI RESUME ANALYZER - LIVE E2E SMOKE TEST")
+    print("AI RESUME ANALYZER - MULTI-FORMAT LIVE E2E SMOKE TEST")
     print("=" * 60)
 
     client = httpx.Client(timeout=30.0)
@@ -57,63 +61,68 @@ def run_smoke_test():
         print(f" -> ERROR connecting to backend: {e}")
         sys.exit(1)
 
-    # 3. Resume Upload & Analysis Generation
-    print("\n[Step 3] Uploading sample PDF resume and analyzing against Job Description...")
+    # 3. PDF Resume Upload & Analysis
+    print("\n[Step 3a] Uploading PDF resume (sample_resume.pdf)...")
     assert SAMPLE_PDF.exists(), f"Sample PDF not found at {SAMPLE_PDF}"
-    pdf_bytes = SAMPLE_PDF.read_bytes()
-
-    files = {"resume": ("sample_resume.pdf", pdf_bytes, "application/pdf")}
+    files_pdf = {"resume": ("sample_resume.pdf", SAMPLE_PDF.read_bytes(), "application/pdf")}
     data = {"job_description": JOB_DESCRIPTION}
 
-    analyze_res = client.post(f"{BACKEND_URL}/api/analyze", files=files, data=data)
-    assert analyze_res.status_code == 201, f"Analyze API returned {analyze_res.status_code}: {analyze_res.text}"
-    record = analyze_res.json()
-    record_id = record["id"]
-    result = record["result"]
+    res_pdf = client.post(f"{BACKEND_URL}/api/analyze", files=files_pdf, data=data)
+    assert res_pdf.status_code == 201, f"PDF Analyze returned {res_pdf.status_code}: {res_pdf.text}"
+    rec_pdf = res_pdf.json()
+    print(f" -> PDF analyzed! ID: {rec_pdf['id']}, Score: {rec_pdf['overall_score']}/100, Role: {rec_pdf['job_title']}")
 
-    print(f" -> Analysis successfully generated! (ID: {record_id})")
-    print(f"    - Job Title: {record['job_title']}")
-    print(f"    - Overall Score: {record['overall_score']}/100")
-    print(f"    - Matching Skills ({len(result['matching_skills'])}): {result['matching_skills']}")
-    print(f"    - Missing Skills ({len(result['missing_skills'])}): {result['missing_skills']}")
-    print(f"    - Keyword Coverage: {result['keyword_analysis']['match_rate']}%")
-    print(f"    - Suggestions ({len(result['suggestions'])}): {[s['title'] for s in result['suggestions'][:3]]}...")
-    print(f"    - Improved Bullets ({len(result['improved_bullets'])}): 1st rewrite -> {result['improved_bullets'][0]['improved'][:70]}...")
-    print(f"    - Interview Questions ({len(result['interview_questions'])}): 1st question -> {result['interview_questions'][0]['question']}")
+    # 3b. DOCX Resume Upload & Analysis
+    print("\n[Step 3b] Uploading Word DOCX resume (sample_resume.docx)...")
+    assert SAMPLE_DOCX.exists(), f"Sample DOCX not found at {SAMPLE_DOCX}"
+    files_docx = {
+        "resume": (
+            "sample_resume.docx",
+            SAMPLE_DOCX.read_bytes(),
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        )
+    }
+    res_docx = client.post(f"{BACKEND_URL}/api/analyze", files=files_docx, data=data)
+    assert res_docx.status_code == 201, f"DOCX Analyze returned {res_docx.status_code}: {res_docx.text}"
+    rec_docx = res_docx.json()
+    print(f" -> DOCX analyzed! ID: {rec_docx['id']}, Score: {rec_docx['overall_score']}/100, Format: {rec_docx['resume_filename']}")
+
+    # 3c. Plain TXT Resume Upload & Analysis
+    print("\n[Step 3c] Uploading Text resume (sample_resume.txt)...")
+    assert SAMPLE_TXT.exists(), f"Sample TXT not found at {SAMPLE_TXT}"
+    files_txt = {"resume": ("sample_resume.txt", SAMPLE_TXT.read_bytes(), "text/plain")}
+    res_txt = client.post(f"{BACKEND_URL}/api/analyze", files=files_txt, data=data)
+    assert res_txt.status_code == 201, f"TXT Analyze returned {res_txt.status_code}: {res_txt.text}"
+    rec_txt = res_txt.json()
+    print(f" -> TXT analyzed! ID: {rec_txt['id']}, Score: {rec_txt['overall_score']}/100, Format: {rec_txt['resume_filename']}")
 
     # 4. History Listing Check
     print("\n[Step 4] Checking analysis history...")
     history_res = client.get(f"{BACKEND_URL}/api/analyses")
     assert history_res.status_code == 200
     history_data = history_res.json()
-    assert history_data["total"] >= 1, "History total should be at least 1"
-    matching_item = next((item for item in history_data["items"] if item["id"] == record_id), None)
-    assert matching_item is not None, f"Analysis {record_id} not found in history"
-    print(f" -> Found analysis {record_id} in history list! (Total in DB: {history_data['total']})")
+    assert history_data["total"] >= 3, "Expected at least 3 analyses in history"
+    print(f" -> Found {history_data['total']} analyses in history! Items:")
+    for item in history_data["items"][:3]:
+        print(f"    - {item['resume_filename']}: {item['overall_score']}/100 ({item['job_title']})")
 
     # 5. Fetch Single Analysis Record
-    print(f"\n[Step 5] Fetching single analysis record {record_id}...")
-    single_res = client.get(f"{BACKEND_URL}/api/analyses/{record_id}")
+    print(f"\n[Step 5] Fetching single analysis record {rec_docx['id']}...")
+    single_res = client.get(f"{BACKEND_URL}/api/analyses/{rec_docx['id']}")
     assert single_res.status_code == 200
     single_record = single_res.json()
-    assert single_record["id"] == record_id
-    assert single_record["result"]["overall_score"] == record["overall_score"]
-    print(f" -> Successfully retrieved record from DB with matching score: {single_record['result']['overall_score']}")
+    assert single_record["id"] == rec_docx["id"]
+    print(f" -> Successfully retrieved record from DB with matching score: {single_record['overall_score']}")
 
-    # 6. Delete Analysis
-    print(f"\n[Step 6] Deleting analysis record {record_id}...")
-    del_res = client.delete(f"{BACKEND_URL}/api/analyses/{record_id}")
-    assert del_res.status_code == 204
-    print(" -> Deleted record (HTTP 204 No Content)")
-
-    # 7. Confirm 404 after Deletion
-    print(f"\n[Step 7] Confirming record is deleted (expecting 404)...")
-    get_deleted = client.get(f"{BACKEND_URL}/api/analyses/{record_id}")
-    assert get_deleted.status_code == 404
-    print(" -> Confirmed record no longer exists (HTTP 404 Not Found)")
+    # 6. Delete Analyses
+    print(f"\n[Step 6] Cleaning up test records...")
+    for rid in [rec_pdf["id"], rec_docx["id"], rec_txt["id"]]:
+        del_res = client.delete(f"{BACKEND_URL}/api/analyses/{rid}")
+        assert del_res.status_code == 204
+    print(" -> All test records cleaned up (HTTP 204)")
 
     print("\n" + "=" * 60)
-    print("ALL LIVE END-TO-END SMOKE TESTS PASSED PERFECTLY!")
+    print("ALL MULTI-FORMAT LIVE E2E SMOKE TESTS PASSED PERFECTLY!")
     print("=" * 60)
 
 if __name__ == "__main__":

@@ -1,0 +1,23 @@
+Jane Doe - Senior Full-Stack & Backend Engineer
+jane@example.com | github.com/janedoe | (555) 019-2834
+
+SUMMARY
+Experienced software engineer with 5+ years architecting microservices, APIs, and web applications.
+Specialized in Python, FastAPI, React, TypeScript, Docker, and PostgreSQL database performance tuning.
+
+WORK EXPERIENCE
+Acme Corp — Senior Backend Engineer (2020 - Present)
+• Architected high-throughput REST APIs using FastAPI and PostgreSQL handling 50M+ monthly requests.
+• Containerized services with Docker and deployed to AWS Kubernetes (EKS) using GitHub Actions CI/CD.
+• Reduced database query latency by 35% through indexing and Redis distributed caching.
+• Led team code reviews, mentored 4 junior engineers, and maintained 90%+ pytest test coverage.
+
+Beta Solutions — Full-Stack Developer (2018 - 2020)
+• Developed internal customer analytics dashboard using React, TypeScript, and Node.js.
+• Integrated third-party payment APIs with robust transaction rollback and auditing.
+
+EDUCATION
+Bachelor of Science in Computer Science — State University (2018)
+
+SKILLS
+Python, FastAPI, TypeScript, React, PostgreSQL, Docker, Kubernetes, AWS, Redis, Git, CI/CD, Unit Testing
