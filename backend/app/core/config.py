@@ -46,7 +46,7 @@ class Settings(BaseSettings):
     openai_base_url: str = "https://api.openai.com/v1"
 
     gemini_api_key: SecretStr | None = None
-    gemini_model: str = "gemini-1.5-flash"
+    gemini_model: str = "gemini-flash-lite-latest"
 
     @property
     def cors_origin_list(self) -> list[str]:
