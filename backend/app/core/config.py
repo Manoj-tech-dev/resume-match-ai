@@ -28,7 +28,7 @@ class Settings(BaseSettings):
     log_level: str = "INFO"
 
     # Stored as a raw comma-separated string so it is easy to set in `.env`.
-    cors_origins: str = "http://localhost:5173,http://127.0.0.1:5173"
+    cors_origins: str = "http://localhost:5173,http://127.0.0.1:5173,https://resume-match-ai-e.vercel.app"
 
     database_url: str = "sqlite:///./data/resume_analyzer.db"
 
