@@ -99,7 +99,6 @@ describe('Full End-to-End User Workflow in Frontend', () => {
 
     // Mock API methods with spies
     const analyzeSpy = vi.spyOn(api, 'analyze').mockResolvedValue(mockRecord);
-    const getAnalysisSpy = vi.spyOn(api, 'getAnalysis').mockResolvedValue(mockRecord);
     const listSpy = vi.spyOn(api, 'listAnalyses').mockResolvedValue({
       items: [mockRecord],
       total: 1,
